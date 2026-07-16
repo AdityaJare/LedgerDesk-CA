@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LedgerDesk CA — Practice Operating System for Chartered Accountants</title>
+<meta name="description" content="LedgerDesk CA is a practice workspace for Indian CA firms. Track deadlines, chase documents, review mismatches, draft replies, and preserve evidence trails from one exception-driven workspace.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN TOKENS ===== */
+:root {
+  /* Spacing – 4px system */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px; --sp-20: 80px; --sp-24: 96px;
+
+  /* Radii */
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-xl: 14px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,.10);
+  --shadow-panel: 0 1px 3px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+
+  /* Typography */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --fs-xs: clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);     /* ~11-12px */
+  --fs-sm: clamp(0.75rem, 0.7rem + 0.2vw, 0.8125rem);        /* ~12-13px */
+  --fs-base: clamp(0.8125rem, 0.78rem + 0.2vw, 0.9375rem);   /* ~13-15px */
+  --fs-md: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);    /* ~15-17px */
+  --fs-lg: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);          /* ~18-22px */
+  --fs-xl: clamp(1.375rem, 1.1rem + 1vw, 1.875rem);          /* ~22-30px */
+  --fs-2xl: clamp(1.75rem, 1.4rem + 1.5vw, 2.625rem);        /* ~28-42px */
+  --fs-3xl: clamp(2rem, 1.5rem + 2vw, 3.25rem);              /* ~32-52px */
+
+  --lh-tight: 1.2; --lh-snug: 1.35; --lh-normal: 1.55;
+
+  /* Transition */
+  --ease: cubic-bezier(.4,0,.2,1);
+  --dur: 200ms;
+
+  /* Max widths */
+  --max-w: 1280px;
+  --max-w-narrow: 880px;
+}
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] {
+  --bg: #f7f7f5;
+  --bg-alt: #eeeee9;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --border: #e0deda;
+  --border-subtle: #ece9e4;
+  --text: #1a1a18;
+  --text-secondary: #5c5b57;
+  --text-muted: #8a8880;
+  --teal: #0d8a72;
+  --teal-light: #e6f5f1;
+  --teal-hover: #0a7562;
+  --warning: #c4760a;
+  --warning-bg: #fef6e8;
+  --error: #c13a3a;
+  --error-bg: #fdeaea;
+  --success: #1a7a4e;
+  --success-bg: #e8f5ee;
+  --info-bg: #eef3fb;
+  --chip-bg: #f0efeb;
+  --chip-border: #dddbd5;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #f0efeb;
+  --code-bg: #f4f3f0;
+  --app-border: #e0deda;
+  --panel-header-bg: #fafaf8;
+  --table-header: #f7f6f3;
+  --table-row-hover: #fafaf8;
+  --table-stripe: #fcfcfa;
+  --overlay-bg: rgba(0,0,0,.4);
+  --focus-ring: 0 0 0 2px var(--teal), 0 0 0 4px rgba(13,138,114,.2);
+}
+
+/* ===== DARK THEME ===== */
+[data-theme="dark"] {
+  --bg: #111110;
+  --bg-alt: #1a1a18;
+  --surface: #1e1e1c;
+  --surface-elevated: #252523;
+  --border: #2e2e2b;
+  --border-subtle: #262624;
+  --text: #e8e6e1;
+  --text-secondary: #a5a39d;
+  --text-muted: #7a7872;
+  --teal: #2cc4a2;
+  --teal-light: #12302a;
+  --teal-hover: #34d6b2;
+  --warning: #e5a33a;
+  --warning-bg: #2a2210;
+  --error: #e06060;
+  --error-bg: #2a1414;
+  --success: #3cc47a;
+  --success-bg: #122a1c;
+  --info-bg: #14202e;
+  --chip-bg: #262624;
+  --chip-border: #363632;
+  --sidebar-bg: #161614;
+  --sidebar-active: #252523;
+  --code-bg: #1e1e1c;
+  --app-border: #2e2e2b;
+  --panel-header-bg: #1e1e1c;
+  --table-header: #222220;
+  --table-row-hover: #252523;
+  --table-stripe: #1c1c1a;
+  --overlay-bg: rgba(0,0,0,.6);
+  --focus-ring: 0 0 0 2px var(--teal), 0 0 0 4px rgba(44,196,162,.2);
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  color: var(--text);
+  background: var(--bg);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+img { max-width: 100%; display: block; }
+a { color: var(--teal); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* Focus */
+:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
+
+/* Skip link */
+.skip-link {
+  position: absolute; top: -100%; left: var(--sp-4);
+  background: var(--teal); color: #fff; padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-sm); font-size: var(--fs-sm); font-weight: 600;
+  z-index: 9999;
+}
+.skip-link:focus { top: var(--sp-2); }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.reveal.revealed {
+  opacity: 1; transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 80ms; }
+.reveal-delay-2 { transition-delay: 160ms; }
+.reveal-delay-3 { transition-delay: 240ms; }
+.reveal-delay-4 { transition-delay: 320ms; }
+
+/* ===== UTILITY ===== */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-6); }
+.container--narrow { max-width: var(--max-w-narrow); }
+.section { padding: var(--sp-24) 0; }
+.section--sm { padding: var(--sp-16) 0; }
+.section--muted { background: var(--bg-alt); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+/* ===== HEADER / NAV ===== */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.site-header__inner {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-6);
+  height: 60px;
+}
+.site-logo { display: flex; align-items: center; gap: var(--sp-2); text-decoration: none; color: var(--text); }
+.site-logo svg { width: 28px; height: 28px; flex-shrink: 0; }
+.site-logo__text { font-size: var(--fs-md); font-weight: 700; letter-spacing: -0.02em; }
+.site-logo__badge {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--teal-light); color: var(--teal); padding: 2px 6px; border-radius: var(--r-sm);
+  margin-left: var(--sp-1);
+}
+.site-nav { display: flex; align-items: center; gap: var(--sp-6); }
+.site-nav__link {
+  font-size: var(--fs-sm); font-weight: 500; color: var(--text-secondary);
+  text-decoration: none; transition: color var(--dur) var(--ease);
+}
+.site-nav__link:hover { color: var(--text); text-decoration: none; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-sm); font-weight: 600; padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-md); transition: all var(--dur) var(--ease);
+  white-space: nowrap; line-height: 1.4;
+}
+.btn--primary { background: var(--teal); color: #fff; }
+.btn--primary:hover { background: var(--teal-hover); text-decoration: none; }
+.btn--secondary {
+  background: transparent; color: var(--text); border: 1px solid var(--border);
+}
+.btn--secondary:hover { border-color: var(--text-muted); text-decoration: none; }
+.btn--ghost { color: var(--teal); padding: var(--sp-2) var(--sp-3); }
+.btn--ghost:hover { background: var(--teal-light); text-decoration: none; }
+.btn--lg { padding: var(--sp-3) var(--sp-6); font-size: var(--fs-base); }
+
+.theme-toggle {
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-md); color: var(--text-secondary);
+  transition: background var(--dur) var(--ease);
+}
+.theme-toggle:hover { background: var(--chip-bg); }
+.theme-toggle svg { width: 18px; height: 18px; }
+
+.mobile-menu-btn { display: none; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: var(--r-md); color: var(--text); }
+.mobile-menu-btn svg { width: 20px; height: 20px; }
+
+/* Mobile drawer */
+.mobile-drawer {
+  display: none; position: fixed; top: 60px; left: 0; right: 0; bottom: 0;
+  background: var(--surface); z-index: 99;
+  padding: var(--sp-6); flex-direction: column; gap: var(--sp-4);
+  border-top: 1px solid var(--border);
+  animation: slideDown 0.25s var(--ease);
+}
+.mobile-drawer.open { display: flex; }
+.mobile-drawer a {
+  font-size: var(--fs-md); font-weight: 500; color: var(--text-secondary);
+  padding: var(--sp-3) 0; border-bottom: 1px solid var(--border-subtle);
+  text-decoration: none;
+}
+.mobile-drawer a:hover { color: var(--text); }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 860px) {
+  .site-nav__link { display: none; }
+  .mobile-menu-btn { display: flex; }
+  .btn--primary.nav-cta-desktop { display: none; }
+}
+
+/* ===== HERO ===== */
+.hero { padding: var(--sp-16) 0 var(--sp-20); }
+.hero__grid {
+  display: grid; grid-template-columns: 1fr 1.15fr; gap: var(--sp-12); align-items: start;
+}
+.hero__content { padding-top: var(--sp-8); }
+.hero__badge {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-xs); font-weight: 600; color: var(--teal);
+  background: var(--teal-light); padding: var(--sp-1) var(--sp-3); border-radius: 100px;
+  margin-bottom: var(--sp-6); letter-spacing: 0.02em;
+}
+.hero__badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+.hero h1 {
+  font-size: var(--fs-3xl); font-weight: 700; line-height: var(--lh-tight);
+  letter-spacing: -0.03em; color: var(--text); margin-bottom: var(--sp-6);
+  max-width: 560px;
+}
+.hero__sub {
+  font-size: var(--fs-md); line-height: var(--lh-normal); color: var(--text-secondary);
+  max-width: 480px; margin-bottom: var(--sp-8);
+}
+.hero__ctas { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-10); }
+.hero__trust {
+  font-size: var(--fs-xs); color: var(--text-muted); display: flex; align-items: center; gap: var(--sp-3);
+}
+.hero__trust span { display: flex; align-items: center; gap: var(--sp-1); }
+
+/* Hero App Mockup */
+.hero-app {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-xl); overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.06);
+  font-size: var(--fs-xs);
+  transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.hero-app:hover {
+  box-shadow: 0 12px 48px rgba(0,0,0,.13), 0 4px 12px rgba(0,0,0,.08);
+  transform: translateY(-2px);
+}
+.hero-app__bar {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4); border-bottom: 1px solid var(--border);
+  background: var(--panel-header-bg);
+}
+.hero-app__dots { display: flex; gap: 5px; }
+.hero-app__dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.hero-app__bar-title { font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); letter-spacing: 0.02em; }
+.hero-app__body { display: grid; grid-template-columns: 160px 1fr; min-height: 360px; }
+.hero-app__sidebar {
+  border-right: 1px solid var(--border); padding: var(--sp-3); background: var(--panel-header-bg);
+}
+.hero-app__nav-item {
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2); border-radius: var(--r-sm);
+  font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-bottom: 1px;
+  cursor: default;
+}
+.hero-app__nav-item--active { background: var(--teal-light); color: var(--teal); font-weight: 600; }
+.hero-app__nav-icon { width: 14px; height: 14px; border-radius: 3px; background: var(--chip-bg); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.hero-app__nav-item--active .hero-app__nav-icon { background: var(--teal); opacity: .2; }
+.hero-app__main { padding: var(--sp-3); display: flex; flex-direction: column; gap: var(--sp-3); }
+
+/* Mini panels inside hero mockup */
+.mini-panel {
+  background: var(--surface-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md); overflow: hidden;
+}
+.mini-panel__header {
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border-subtle);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.mini-panel__title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+.mini-panel__body { padding: var(--sp-2) var(--sp-3); }
+
+.mini-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 3px 0; border-bottom: 1px solid var(--border-subtle);
+  font-size: 10.5px;
+}
+.mini-row:last-child { border-bottom: none; }
+.mini-row__left { display: flex; align-items: center; gap: var(--sp-2); color: var(--text-secondary); min-width: 0; }
+.mini-row__client { font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
+.mini-row__task { color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Status chips */
+.chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 1px 6px; border-radius: 100px; font-size: 9.5px; font-weight: 600;
+  white-space: nowrap; line-height: 1.6;
+}
+.chip--due { background: var(--warning-bg); color: var(--warning); }
+.chip--overdue { background: var(--error-bg); color: var(--error); }
+.chip--waiting { background: var(--info-bg); color: var(--teal); }
+.chip--review { background: var(--teal-light); color: var(--teal); }
+.chip--done { background: var(--success-bg); color: var(--success); }
+.chip--draft { background: var(--chip-bg); color: var(--text-secondary); border: 1px solid var(--chip-border); }
+.chip--mismatch { background: var(--error-bg); color: var(--error); }
+
+/* Large chips for sections */
+.chip-lg {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  padding: var(--sp-1) var(--sp-3); border-radius: 100px;
+  font-size: var(--fs-xs); font-weight: 600; white-space: nowrap;
+}
+
+@media (max-width: 960px) {
+  .hero__grid { grid-template-columns: 1fr; gap: var(--sp-8); }
+  .hero__content { padding-top: 0; }
+  .hero-app__body { grid-template-columns: 1fr; }
+  .hero-app__sidebar { display: none; }
+}
+
+/* ===== SECTION HEADERS ===== */
+.section-header { margin-bottom: var(--sp-12); max-width: 640px; }
+.section-header__label {
+  font-size: var(--fs-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--teal); margin-bottom: var(--sp-3);
+}
+.section-header h2 {
+  font-size: var(--fs-2xl); font-weight: 700; line-height: var(--lh-tight);
+  letter-spacing: -0.025em; margin-bottom: var(--sp-4);
+}
+.section-header p { font-size: var(--fs-md); color: var(--text-secondary); line-height: var(--lh-normal); }
+
+/* ===== PROBLEM SECTION ===== */
+.problems-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4);
+}
+.problem-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-6) var(--sp-6) var(--sp-5);
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.problem-card:hover { border-color: var(--text-muted); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.problem-card__area {
+  font-size: var(--fs-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-muted); margin-bottom: var(--sp-3);
+  display: flex; align-items: center; gap: var(--sp-2);
+}
+.problem-card__area::before {
+  content: ''; width: 3px; height: 14px; border-radius: 2px; background: var(--warning);
+}
+.problem-card h3 {
+  font-size: var(--fs-lg); font-weight: 600; line-height: var(--lh-snug);
+  letter-spacing: -0.01em; margin-bottom: var(--sp-3);
+}
+.problem-card p { font-size: var(--fs-sm); color: var(--text-secondary); line-height: var(--lh-normal); }
+
+.problem-card:nth-child(1) .problem-card__area::before { background: var(--error); }
+.problem-card:nth-child(2) .problem-card__area::before { background: var(--warning); }
+.problem-card:nth-child(3) .problem-card__area::before { background: var(--teal); }
+.problem-card:nth-child(4) .problem-card__area::before { background: var(--text-muted); }
+.problem-card:nth-child(5) .problem-card__area::before { background: var(--error); }
+.problem-card:last-child { grid-column: 1 / -1; }
+
+@media (max-width: 700px) {
+  .problems-grid { grid-template-columns: 1fr; }
+  .problem-card:last-child { grid-column: auto; }
+}
+
+/* ===== WORKFLOW ===== */
+.workflow-steps {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+  position: relative;
+}
+/* Horizontal connector line behind steps */
+.workflow-steps::before {
+  content: ''; position: absolute;
+  top: 41px; /* vertically center with step number */
+  left: calc(10% + 14px); right: calc(10% + 14px);
+  height: 2px; background: var(--border);
+  z-index: 0;
+}
+.workflow-step {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-5); position: relative;
+  z-index: 1; margin: 0 var(--sp-1);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.workflow-step:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.workflow-step__num {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--teal-light);
+  color: var(--teal); font-size: var(--fs-xs); font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: var(--sp-3); position: relative;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 2px var(--teal-light);
+}
+.workflow-step h3 { font-size: var(--fs-base); font-weight: 600; margin-bottom: var(--sp-2); letter-spacing: -0.01em; }
+.workflow-step p { font-size: var(--fs-sm); color: var(--text-secondary); line-height: var(--lh-normal); margin-bottom: var(--sp-3); }
+.workflow-step__details { display: flex; flex-direction: column; gap: 3px; }
+.workflow-step__detail {
+  font-size: 11px; color: var(--text-muted); display: flex; align-items: baseline; gap: var(--sp-2);
+  line-height: 1.5;
+}
+.workflow-step__detail::before { content: '→'; color: var(--teal); font-weight: 600; flex-shrink: 0; }
+.workflow-arrow {
+  position: absolute; right: -13px; top: 41px; transform: translateY(-50%);
+  width: 24px; height: 24px; z-index: 2; color: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); border-radius: 50%;
+}
+@media (max-width: 960px) {
+  .workflow-steps { grid-template-columns: 1fr; gap: var(--sp-3); }
+  .workflow-steps::before { display: none; }
+  .workflow-arrow { display: none; }
+  .workflow-step { margin: 0; }
+}
+
+/* ===== FEATURES ===== */
+.features-grid {
+  display: grid; grid-template-columns: 1.2fr 0.8fr; gap: var(--sp-4);
+}
+.features-grid--secondary {
+  grid-template-columns: repeat(3, 1fr); margin-top: var(--sp-4);
+}
+.feature-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-6);
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.feature-card:hover { border-color: var(--text-muted); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.feature-card__icon {
+  width: 36px; height: 36px; border-radius: var(--r-md);
+  background: var(--teal-light); color: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: var(--sp-4);
+}
+.feature-card__icon svg { width: 18px; height: 18px; }
+.feature-card h3 {
+  font-size: var(--fs-lg); font-weight: 600; margin-bottom: var(--sp-3);
+  letter-spacing: -0.01em;
+}
+.feature-card p {
+  font-size: var(--fs-sm); color: var(--text-secondary); line-height: var(--lh-normal);
+  margin-bottom: var(--sp-4);
+}
+.feature-card__tags { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.feature-card__tag {
+  font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 100px;
+  background: var(--chip-bg); color: var(--text-muted); border: 1px solid var(--chip-border);
+}
+.feature-card--anchor { grid-row: span 1; }
+.feature-card--anchor h3 { font-size: var(--fs-xl); }
+
+@media (max-width: 860px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .features-grid--secondary { grid-template-columns: 1fr; }
+}
+
+/* ===== AI AGENTS ===== */
+.agents-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--sp-4); }
+.agent-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-5); position: relative;
+  display: flex; flex-direction: column;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.agent-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.agent-card__badge {
+  position: absolute; top: var(--sp-3); right: var(--sp-3);
+  font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 2px 6px; border-radius: 100px;
+  background: var(--warning-bg); color: var(--warning);
+}
+.agent-card h3 { font-size: var(--fs-base); font-weight: 600; margin-bottom: var(--sp-2); padding-right: var(--sp-10); }
+.agent-card__desc { font-size: var(--fs-sm); color: var(--text-secondary); line-height: var(--lh-normal); margin-bottom: var(--sp-4); flex: 1; }
+.agent-card__guardrails { border-top: 1px solid var(--border-subtle); padding-top: var(--sp-3); }
+.agent-card__guardrail {
+  font-size: 10.5px; color: var(--text-muted); display: flex; align-items: center; gap: var(--sp-2);
+  line-height: 1.7;
+}
+.agent-card__guardrail::before { content: '✓'; color: var(--success); font-weight: 700; font-size: 10px; }
+.agent-disclaimer {
+  margin-top: var(--sp-6); padding: var(--sp-4) var(--sp-5);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); font-size: var(--fs-sm); color: var(--text-secondary);
+  display: flex; align-items: center; gap: var(--sp-3);
+}
+.agent-disclaimer__icon { flex-shrink: 0; width: 20px; height: 20px; color: var(--warning); }
+@media (max-width: 1080px) { .agents-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .agents-grid { grid-template-columns: 1fr; } }
+
+/* ===== COMPARISON ===== */
+.comparison-table-wrap {
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.comparison-table {
+  width: 100%; border-collapse: collapse; font-size: var(--fs-sm);
+  min-width: 700px;
+}
+.comparison-table th, .comparison-table td {
+  padding: var(--sp-3) var(--sp-4); text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.comparison-table thead th {
+  background: var(--table-header); font-weight: 600; font-size: var(--fs-xs);
+  text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);
+  position: sticky; top: 0;
+}
+.comparison-table thead th:last-child { color: var(--teal); }
+.comparison-table tbody td:first-child { font-weight: 500; color: var(--text); }
+.comparison-table tbody tr:hover { background: var(--table-row-hover); }
+.cmp-partial { color: var(--warning); font-weight: 500; }
+.cmp-manual { color: var(--text-muted); }
+.cmp-outside { color: var(--error); font-weight: 500; }
+.cmp-connected { color: var(--teal); font-weight: 600; }
+.cmp-none { color: var(--text-muted); }
+
+/* ===== DAILY USE SCREENS ===== */
+.screens-tabs {
+  display: flex; gap: var(--sp-1); margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--border); padding-bottom: 0;
+  overflow-x: auto;
+}
+.screens-tab {
+  padding: var(--sp-2) var(--sp-4) var(--sp-3);
+  font-size: var(--fs-sm); font-weight: 500; color: var(--text-muted);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  white-space: nowrap;
+}
+.screens-tab:hover { color: var(--text); }
+.screens-tab--active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 600; }
+
+.screen-panel { display: none; }
+.screen-panel--active { display: block; }
+
+.screen-frame {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); overflow: hidden;
+}
+.screen-frame__header {
+  padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--panel-header-bg);
+}
+.screen-frame__title { font-size: var(--fs-sm); font-weight: 600; }
+.screen-frame__filters { display: flex; gap: var(--sp-2); }
+.screen-frame__filter {
+  font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 100px;
+  border: 1px solid var(--border); color: var(--text-muted); cursor: default;
+  background: transparent;
+}
+.screen-frame__filter--active { background: var(--teal-light); color: var(--teal); border-color: var(--teal); }
+.screen-frame__body { padding: var(--sp-4) var(--sp-5); }
+
+/* Data tables inside screens */
+.data-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.data-table th {
+  text-align: left; padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary); vertical-align: top;
+}
+.data-table td:first-child { color: var(--text); font-weight: 500; }
+.data-table tr:hover { background: var(--table-row-hover); }
+.data-table .row-overdue { border-left: 3px solid var(--error); }
+.data-table .row-urgent { border-left: 3px solid var(--warning); }
+
+/* Draft editor inside screen */
+.draft-editor { display: grid; grid-template-columns: 1fr 280px; gap: 0; min-height: 300px; }
+.draft-editor__main { padding: var(--sp-4); border-right: 1px solid var(--border); }
+.draft-editor__sidebar { padding: var(--sp-4); background: var(--panel-header-bg); }
+.draft-editor__label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: var(--sp-2); }
+.draft-editor__field { font-size: var(--fs-sm); color: var(--text-secondary); margin-bottom: var(--sp-4); line-height: var(--lh-normal); }
+.draft-editor__text {
+  font-size: var(--fs-sm); color: var(--text); line-height: 1.7;
+  border: 1px solid var(--border-subtle); border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4); background: var(--bg); min-height: 140px;
+}
+
+/* Timeline inside screens */
+.timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
+.timeline-item {
+  display: grid; grid-template-columns: 140px 20px 1fr; gap: var(--sp-2);
+  font-size: var(--fs-sm); padding: var(--sp-3) 0;
+  align-items: start; position: relative;
+}
+.timeline-item:not(:last-child)::after {
+  content: ''; position: absolute; left: 149px; top: 22px; bottom: -4px;
+  width: 1.5px; background: var(--border-subtle);
+}
+.timeline-item__time { color: var(--text-muted); font-size: var(--fs-xs); text-align: right; padding-top: 2px; }
+.timeline-item__dot { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+.timeline-item__dot::before {
+  content: ''; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--border); margin-top: 4px;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1.5px var(--border);
+}
+.timeline-item--approved .timeline-item__dot::before { background: var(--success); box-shadow: 0 0 0 1.5px var(--success); }
+.timeline-item--returned .timeline-item__dot::before { background: var(--warning); box-shadow: 0 0 0 1.5px var(--warning); }
+.timeline-item--exported .timeline-item__dot::before { background: var(--teal); box-shadow: 0 0 0 1.5px var(--teal); }
+.timeline-item__content { color: var(--text-secondary); }
+.timeline-item__content strong { color: var(--text); font-weight: 500; }
+
+@media (max-width: 700px) {
+  .draft-editor { grid-template-columns: 1fr; }
+  .draft-editor__sidebar { border-top: 1px solid var(--border); }
+  .timeline-item { grid-template-columns: 90px 16px 1fr; }
+}
+
+/* ===== TRUST ===== */
+.trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
+.trust-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-5);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.trust-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.trust-card h3 { font-size: var(--fs-base); font-weight: 600; margin-bottom: var(--sp-2); }
+.trust-card p { font-size: var(--fs-sm); color: var(--text-secondary); line-height: var(--lh-normal); }
+@media (max-width: 700px) { .trust-grid { grid-template-columns: 1fr; } }
+
+/* ===== PRICING PHILOSOPHY ===== */
+.pricing-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-10) var(--sp-12);
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-12); align-items: start;
+}
+.pricing-block h3 { font-size: var(--fs-xl); font-weight: 700; margin-bottom: var(--sp-4); letter-spacing: -0.02em; }
+.pricing-block p { font-size: var(--fs-base); color: var(--text-secondary); line-height: var(--lh-normal); margin-bottom: var(--sp-4); }
+.pricing-notes { list-style: none; }
+.pricing-notes li {
+  font-size: var(--fs-sm); color: var(--text-secondary); padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: var(--sp-3);
+}
+.pricing-notes li:last-child { border-bottom: none; }
+.pricing-notes li::before { content: '—'; color: var(--text-muted); flex-shrink: 0; }
+@media (max-width: 700px) { .pricing-block { grid-template-columns: 1fr; padding: var(--sp-6); } }
+
+/* ===== FINAL CTA ===== */
+.final-cta {
+  text-align: left; padding: var(--sp-20) 0;
+}
+.final-cta h2 {
+  font-size: var(--fs-2xl); font-weight: 700; line-height: var(--lh-tight);
+  letter-spacing: -0.025em; margin-bottom: var(--sp-4); max-width: 520px;
+}
+.final-cta p { font-size: var(--fs-md); color: var(--text-secondary); margin-bottom: var(--sp-8); max-width: 440px; }
+.final-cta__actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+
+/* ===== FOOTER ===== */
+.site-footer {
+  border-top: 1px solid var(--border); padding: var(--sp-8) 0;
+}
+.site-footer__inner {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: var(--fs-xs); color: var(--text-muted);
+}
+.site-footer__links { display: flex; gap: var(--sp-6); }
+.site-footer__links a { color: var(--text-muted); font-size: var(--fs-xs); }
+.site-footer__links a:hover { color: var(--text); }
+@media (max-width: 600px) {
+  .site-footer__inner { flex-direction: column; gap: var(--sp-4); text-align: center; }
+}
+
+/* ===== SECTION DIVIDERS ===== */
+.divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+/* ===== DATA TABLE MOBILE ===== */
+@media (max-width: 860px) {
+  .screen-frame__body { padding: var(--sp-3); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table { min-width: 600px; }
+  .screen-frame__header { flex-direction: column; gap: var(--sp-2); align-items: flex-start; }
+}
+
+/* ===== HERO ENTRANCE ===== */
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero__content { animation: heroFadeIn 0.8s var(--ease) both; }
+.hero-app { animation: heroFadeIn 0.8s var(--ease) 0.15s both; }
+</style>
+</head>
+<body>
+
+<!-- Skip Link -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header" role="banner">
+  <div class="site-header__inner">
+    <a href="#" class="site-logo" aria-label="LedgerDesk CA Home">
+      <!-- Inline SVG Logo -->
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="2" y="2" width="24" height="24" rx="5" fill="currentColor" opacity=".08" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M8 8h3v12H8V8z" fill="currentColor" opacity=".25"/>
+        <path d="M13 16h7v4H13v-4z" fill="currentColor" opacity=".6"/>
+        <path d="M13 8h4v6h-4V8z" fill="currentColor" opacity=".15"/>
+        <rect x="8" y="8" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/>
+        <line x1="8" y1="14" x2="20" y2="14" stroke="currentColor" stroke-width="0.8" opacity=".3"/>
+        <line x1="13" y1="8" x2="13" y2="20" stroke="currentColor" stroke-width="0.8" opacity=".3"/>
+      </svg>
+      <span class="site-logo__text">LedgerDesk</span>
+      <span class="site-logo__badge">CA</span>
+    </a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="#workflow" class="site-nav__link">Workflow</a>
+      <a href="#features" class="site-nav__link">Modules</a>
+      <a href="#agents" class="site-nav__link">AI Agents</a>
+      <a href="#screens" class="site-nav__link">Product</a>
+      <a href="#pricing" class="site-nav__link">Pricing</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" type="button">
+        <svg class="theme-icon-sun" viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="4"/><path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.93 3.93l1.41 1.41M14.66 14.66l1.41 1.41M3.93 16.07l1.41-1.41M14.66 5.34l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        <svg class="theme-icon-moon" viewBox="0 0 20 20" fill="currentColor" style="display:none"><path d="M17.29 13.35A8 8 0 116.65 2.71a6 6 0 0010.64 10.64z"/></svg>
+      </button>
+      <a href="#cta" class="btn btn--primary">Book a workflow demo</a>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu" type="button">
+        <svg viewBox="0 0 20 20" fill="currentColor"><rect x="2" y="4" width="16" height="1.5" rx=".75"/><rect x="2" y="9.25" width="16" height="1.5" rx=".75"/><rect x="2" y="14.5" width="16" height="1.5" rx=".75"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main-content">
+
+<!-- ===== HERO ===== -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="container">
+    <div class="hero__grid">
+      <div class="hero__content">
+        <div class="hero__badge" aria-hidden="true">Practice workspace for CA firms</div>
+        <h1 id="hero-heading">Your CA practice does not need another dashboard.</h1>
+        <p class="hero__sub">LedgerDesk helps CA firms manage deadlines, mismatches, client follow-ups, drafting, and review trails from one workspace.</p>
+        <div class="hero__ctas">
+          <a href="#cta" class="btn btn--primary btn--lg">Book a workflow demo</a>
+          <a href="#screens" class="btn btn--secondary btn--lg">See the review screen</a>
+        </div>
+        <div class="hero__trust">
+          <span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.2"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Role-based access
+          </span>
+          <span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.2"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Client data isolation
+          </span>
+          <span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.2"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Full audit trail
+          </span>
+        </div>
+      </div>
+
+      <!-- Hero App Composition -->
+      <div class="hero-app" aria-label="Product interface preview">
+        <div class="hero-app__bar">
+          <div class="hero-app__dots"><span></span><span></span><span></span></div>
+          <span class="hero-app__bar-title">LedgerDesk — Main Dashboard</span>
+        </div>
+        <div class="hero-app__body">
+          <nav class="hero-app__sidebar" aria-label="Mock sidebar">
+            <div class="hero-app__nav-item hero-app__nav-item--active"><span class="hero-app__nav-icon"></span> Dashboard</div>
+            <div class="hero-app__nav-item"><span class="hero-app__nav-icon"></span> Deadlines</div>
+            <div class="hero-app__nav-item"><span class="hero-app__nav-icon"></span> Exceptions</div>
+            <div class="hero-app__nav-item"><span class="hero-app__nav-icon"></span> Documents</div>
+            <div class="hero-app__nav-item"><span class="hero-app__nav-icon"></span> Drafting</div>
+            <div class="hero-app__nav-item"><span class="hero-app__nav-icon"></span> Review</div>
+            <div class="hero-app__nav-item"><span class="hero-app__nav-icon"></span> Clients</div>
+            <div class="hero-app__nav-item"><span class="hero-app__nav-icon"></span> Reports</div>
+          </nav>
+          <div class="hero-app__main">
+            <!-- Mini Panel: Due Dates -->
+            <div class="mini-panel">
+              <div class="mini-panel__header">
+                <span class="mini-panel__title">Due dates — today</span>
+                <span class="chip chip--overdue">3 overdue</span>
+              </div>
+              <div class="mini-panel__body">
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Mangal Metals</span><span class="mini-row__task">GSTR-3B</span></span>
+                  <span class="chip chip--due">Due in 2d</span>
+                </div>
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Orbit Buildcon</span><span class="mini-row__task">Notice reply</span></span>
+                  <span class="chip chip--overdue">Overdue</span>
+                </div>
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Veda Plastics</span><span class="mini-row__task">Tax audit</span></span>
+                  <span class="chip chip--review">In review</span>
+                </div>
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Nova Realty</span><span class="mini-row__task">TDS return</span></span>
+                  <span class="chip chip--waiting">Awaiting docs</span>
+                </div>
+              </div>
+            </div>
+            <!-- Mini Panel: Exceptions -->
+            <div class="mini-panel">
+              <div class="mini-panel__header">
+                <span class="mini-panel__title">Exceptions</span>
+                <span class="chip chip--mismatch">14 mismatches</span>
+              </div>
+              <div class="mini-panel__body">
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Mangal Metals</span><span class="mini-row__task">2A mismatch · ₹2.8L</span></span>
+                  <span class="chip chip--mismatch">Open</span>
+                </div>
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Saffron Retail</span><span class="mini-row__task">Bank recon · ₹4.2L</span></span>
+                  <span class="chip chip--review">Pending review</span>
+                </div>
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Nova Realty</span><span class="mini-row__task">TDS variance · ₹78K</span></span>
+                  <span class="chip chip--draft">In progress</span>
+                </div>
+              </div>
+            </div>
+            <!-- Mini Panel: Review activity -->
+            <div class="mini-panel">
+              <div class="mini-panel__header">
+                <span class="mini-panel__title">Partner review</span>
+                <span class="chip chip--waiting">4 pending</span>
+              </div>
+              <div class="mini-panel__body">
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Orbit Buildcon</span><span class="mini-row__task">Notice reply draft</span></span>
+                  <span class="chip chip--review">Review req.</span>
+                </div>
+                <div class="mini-row">
+                  <span class="mini-row__left"><span class="mini-row__client">Veda Plastics</span><span class="mini-row__task">Audit workpapers</span></span>
+                  <span class="chip chip--done">Approved ✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider container">
+
+<!-- ===== PROBLEM SECTION ===== -->
+<section class="section" id="problems" aria-labelledby="problems-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header__label">Where practice operations break</div>
+      <h2 id="problems-heading">Your firm runs on deadlines, documents, and review. All three break daily.</h2>
+      <p>These are not edge cases. They are the default operating condition for most CA firms handling more than a few clients.</p>
+    </div>
+    <div class="problems-grid">
+      <div class="problem-card">
+        <div class="problem-card__area">Deadline management</div>
+        <h3>Every return type has a different calendar, and none of them sync.</h3>
+        <p>GST, TDS, advance tax, ROC, audit timelines, notice responses — each tracked in a separate portal, sheet, or someone's memory. One missed date can cascade into penalties across the cycle.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card__area">Document collection</div>
+        <h3>Staff spend more time chasing documents than reviewing them.</h3>
+        <p>Purchase registers arrive late, bank statements are sent in parts, invoices come over WhatsApp. There is no shared record of what was asked, what was received, and what is still missing before filing.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card__area">Reconciliation</div>
+        <h3>Mismatch work lives in spreadsheets that only one person understands.</h3>
+        <p>GSTR-2A vs books, TDS as per Form 26AS vs ledger, bank vs cash book — each reconciliation is an export-download-compare cycle with no visibility into what was resolved or why.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card__area">Drafting &amp; notices</div>
+        <h3>Every notice reply and submission is drafted from scratch.</h3>
+        <p>Associates spend hours writing replies to similar GST and income tax notices without reusable templates, past drafts, or linked source documents. Review comments get lost in email threads.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card__area">Partner review &amp; sign-off</div>
+        <h3>Partners review in WhatsApp screenshots and email forwards.</h3>
+        <p>There is no structured queue showing what is waiting for review, what was returned with comments, and what was approved. Evidence of review and sign-off is scattered or absent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider container">
+
+<!-- ===== WORKFLOW ===== -->
+<section class="section" id="workflow" aria-labelledby="workflow-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header__label">Practice operating cycle</div>
+      <h2 id="workflow-heading">Five steps between raw data and retained evidence.</h2>
+      <p>This is how LedgerDesk structures work from intake to sign-off — across GST, TDS, audit, and notice handling.</p>
+    </div>
+    <div class="workflow-steps">
+      <div class="workflow-step">
+        <div class="workflow-step__num">1</div>
+        <h3>Receive data</h3>
+        <p>Client books, portal downloads, bank statements, and notices flow into a unified intake.</p>
+        <div class="workflow-step__details">
+          <span class="workflow-step__detail">Tally/Busy imports</span>
+          <span class="workflow-step__detail">GST portal files</span>
+          <span class="workflow-step__detail">Client uploads via portal</span>
+          <span class="workflow-step__detail">Notice PDFs</span>
+        </div>
+        <span class="workflow-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step__num">2</div>
+        <h3>Detect exceptions</h3>
+        <p>Automated comparison surfaces mismatches, variances, and gaps before anyone files.</p>
+        <div class="workflow-step__details">
+          <span class="workflow-step__detail">2A vs books mismatch</span>
+          <span class="workflow-step__detail">TDS challan variances</span>
+          <span class="workflow-step__detail">Missing line items</span>
+          <span class="workflow-step__detail">Bank recon breaks</span>
+        </div>
+        <span class="workflow-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step__num">3</div>
+        <h3>Ask client</h3>
+        <p>Structured document requests and clarification threads replace scattered WhatsApp follow-ups.</p>
+        <div class="workflow-step__details">
+          <span class="workflow-step__detail">Document request threads</span>
+          <span class="workflow-step__detail">Reminder tracking</span>
+          <span class="workflow-step__detail">Partial receipt handling</span>
+          <span class="workflow-step__detail">Escalation to partner</span>
+        </div>
+        <span class="workflow-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step__num">4</div>
+        <h3>Draft and review</h3>
+        <p>Replies, reconciliation notes, and workpapers are drafted with linked sources and routed for review.</p>
+        <div class="workflow-step__details">
+          <span class="workflow-step__detail">Source-linked drafting</span>
+          <span class="workflow-step__detail">Reviewer assignment</span>
+          <span class="workflow-step__detail">Comment threads</span>
+          <span class="workflow-step__detail">Return-and-revise cycle</span>
+        </div>
+        <span class="workflow-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step__num">5</div>
+        <h3>Sign off &amp; retain</h3>
+        <p>Partner approval, version control, and evidence pack export close the loop on every work item.</p>
+        <div class="workflow-step__details">
+          <span class="workflow-step__detail">Partner sign-off log</span>
+          <span class="workflow-step__detail">Versioned history</span>
+          <span class="workflow-step__detail">Evidence pack export</span>
+          <span class="workflow-step__detail">Working paper retention</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider container">
+
+<!-- ===== FEATURE ARCHITECTURE ===== -->
+<section class="section section--muted" id="features" aria-labelledby="features-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header__label">Product modules</div>
+      <h2 id="features-heading">Seven modules. One connected review cycle.</h2>
+      <p>Each module handles a real layer of CA firm work — from deadline tracking to evidence retention. Nothing operates in isolation.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card feature-card--anchor">
+        <div class="feature-card__icon">
+          <svg viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="7" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="3" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="10" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        </div>
+        <h3>Multi-client workspace</h3>
+        <p>Manage 30, 100, or 300 clients from one unified interface. Each client's deadlines, documents, exceptions, and review history stay separated but accessible from a single command bar. Assign ownership at the client, task, or engagement level.</p>
+        <div class="feature-card__tags">
+          <span class="feature-card__tag">Client-wise isolation</span>
+          <span class="feature-card__tag">Team assignment</span>
+          <span class="feature-card__tag">Engagement tracking</span>
+          <span class="feature-card__tag">Filter by owner</span>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><line x1="2" y1="6.5" x2="16" y2="6.5" stroke="currentColor" stroke-width="1"/><line x1="6" y1="6.5" x2="6" y2="16" stroke="currentColor" stroke-width="1"/><circle cx="10" cy="11" r="1.2" fill="currentColor"/></svg>
+        </div>
+        <h3>Statutory calendar and task engine</h3>
+        <p>Pre-loaded Indian compliance calendar with GST, TDS, advance tax, ROC, and audit dates. Assign tasks, set dependencies, and track completion across the firm. Know what is overdue before your client calls.</p>
+        <div class="feature-card__tags">
+          <span class="feature-card__tag">GST cycle</span>
+          <span class="feature-card__tag">TDS quarterly</span>
+          <span class="feature-card__tag">Audit milestones</span>
+          <span class="feature-card__tag">Custom tasks</span>
+        </div>
+      </div>
+    </div>
+    <div class="features-grid--secondary">
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M3 14l4-8 3 5 2-3 3 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="5" r="2" stroke="currentColor" stroke-width="1.2"/></svg>
+        </div>
+        <h3>Exception-led reconciliation center</h3>
+        <p>Mismatches between GSTR-2A and books, 26AS and TDS ledger, and bank and cash book surface as triage queues — not buried in exports. Each exception carries an owner, age, and next-action state.</p>
+        <div class="feature-card__tags">
+          <span class="feature-card__tag">Mismatch queues</span>
+          <span class="feature-card__tag">Client clarification</span>
+          <span class="feature-card__tag">Reviewer checkpoints</span>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><line x1="5" y1="6" x2="13" y2="6" stroke="currentColor" stroke-width="1"/><line x1="5" y1="9" x2="11" y2="9" stroke="currentColor" stroke-width="1"/><line x1="5" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1"/></svg>
+        </div>
+        <h3>Drafting and notice reply studio</h3>
+        <p>Draft replies to GST show cause notices, income tax demands, and departmental queries with linked source documents. Reuse past drafts. Route every version through reviewer approval before finalisation.</p>
+        <div class="feature-card__tags">
+          <span class="feature-card__tag">Source-linked</span>
+          <span class="feature-card__tag">Reusable templates</span>
+          <span class="feature-card__tag">Review routing</span>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M9 2v5l3 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/></svg>
+        </div>
+        <h3>Client document portal</h3>
+        <p>Clients upload documents against specific requests. Your team sees what is pending, what arrived, and what needs clarification — with timestamps and version tracking on every file.</p>
+        <div class="feature-card__tags">
+          <span class="feature-card__tag">Structured requests</span>
+          <span class="feature-card__tag">Upload tracking</span>
+          <span class="feature-card__tag">Reminder history</span>
+        </div>
+      </div>
+    </div>
+    <div class="features-grid" style="margin-top: var(--sp-4);">
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M7 7l2 2 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="12" x2="12" y2="12" stroke="currentColor" stroke-width="1"/></svg>
+        </div>
+        <h3>Evidence locker and audit trail</h3>
+        <p>Every document version, review comment, sign-off, and export is retained with timestamps. Export working paper packs per client or engagement. Evidence is never scattered across folders and chats again.</p>
+        <div class="feature-card__tags">
+          <span class="feature-card__tag">Document versioning</span>
+          <span class="feature-card__tag">Sign-off logs</span>
+          <span class="feature-card__tag">Working paper export</span>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M4 15c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M13 4l2-2m0 0l-1.5 0m1.5 0l0 1.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+        </div>
+        <h3>AI agents for review support</h3>
+        <p>Focused agents assist with notice drafting, reconciliation summaries, law research, and follow-up generation. Every agent output is draft-only, source-linked, and requires reviewer approval before use.</p>
+        <div class="feature-card__tags">
+          <span class="feature-card__tag">Draft only</span>
+          <span class="feature-card__tag">Source-linked</span>
+          <span class="feature-card__tag">Reviewer required</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider container">
+
+<!-- ===== AI AGENTS ===== -->
+<section class="section" id="agents" aria-labelledby="agents-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header__label">Review support agents</div>
+      <h2 id="agents-heading">Five agents. All constrained. None file anything.</h2>
+      <p>Each agent operates inside the review workflow with guardrails: linked sources, reviewer approval, and no autonomous submissions.</p>
+    </div>
+    <div class="agents-grid">
+      <div class="agent-card">
+        <span class="agent-card__badge">Draft only</span>
+        <h3>Notice Reply Agent</h3>
+        <p class="agent-card__desc">Drafts replies to GST show cause notices, income tax demands, and departmental queries using past drafts, notice text, and relevant sections as source material.</p>
+        <div class="agent-card__guardrails">
+          <div class="agent-card__guardrail">Source-linked output</div>
+          <div class="agent-card__guardrail">Reviewer approval required</div>
+          <div class="agent-card__guardrail">No auto-filing</div>
+        </div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-card__badge">Draft only</span>
+        <h3>Reconciliation Agent</h3>
+        <p class="agent-card__desc">Compares GSTR-2A vs books, 26AS vs TDS ledger, and bank vs cash book. Surfaces mismatches as a triage list with variance amounts and suggested next steps.</p>
+        <div class="agent-card__guardrails">
+          <div class="agent-card__guardrail">Source-linked output</div>
+          <div class="agent-card__guardrail">Reviewer approval required</div>
+          <div class="agent-card__guardrail">No blind adjustments</div>
+        </div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-card__badge">Draft only</span>
+        <h3>Law Research Agent</h3>
+        <p class="agent-card__desc">Finds relevant sections, circulars, case law, and tribunal rulings against a notice or audit observation. Returns cited references — not legal advice.</p>
+        <div class="agent-card__guardrails">
+          <div class="agent-card__guardrail">Citation-linked</div>
+          <div class="agent-card__guardrail">Reviewer verification needed</div>
+          <div class="agent-card__guardrail">No legal advice</div>
+        </div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-card__badge">Draft only</span>
+        <h3>Audit Review Agent</h3>
+        <p class="agent-card__desc">Scans workpapers and supporting schedules for gaps, missing cross-references, and incomplete documentation before the reviewer sees them.</p>
+        <div class="agent-card__guardrails">
+          <div class="agent-card__guardrail">Source-linked output</div>
+          <div class="agent-card__guardrail">Reviewer sign-off required</div>
+          <div class="agent-card__guardrail">Flags only — no edits</div>
+        </div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-card__badge">Draft only</span>
+        <h3>Client Follow-up Agent</h3>
+        <p class="agent-card__desc">Generates follow-up messages for pending documents based on outstanding request lists, reminder history, and deadline proximity. Sends nothing without approval.</p>
+        <div class="agent-card__guardrails">
+          <div class="agent-card__guardrail">Based on request list</div>
+          <div class="agent-card__guardrail">Approval before sending</div>
+          <div class="agent-card__guardrail">Escalation flagged</div>
+        </div>
+      </div>
+    </div>
+    <div class="agent-disclaimer">
+      <svg class="agent-disclaimer__icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 11a1 1 0 110-2 1 1 0 010 2zm1-4a1 1 0 01-2 0V6a1 1 0 112 0v3z"/></svg>
+      <span>No agent in LedgerDesk files, submits, or adjusts anything without explicit human review and approval. Every output is traceable to its source material.</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider container">
+
+<!-- ===== COMPARISON ===== -->
+<section class="section section--muted" id="comparison" aria-labelledby="comparison-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header__label">Why current tools fall short</div>
+      <h2 id="comparison-heading">Most tools solve one slice. The work cycle stays broken.</h2>
+      <p>Filing tools, audit tools, legal research, and spreadsheets each handle a fragment. LedgerDesk connects exception to review trail.</p>
+    </div>
+    <div class="comparison-table-wrap">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th scope="col">Workflow layer</th>
+            <th scope="col">Filing tools</th>
+            <th scope="col">Audit tools</th>
+            <th scope="col">Legal research</th>
+            <th scope="col">Spreadsheet / WhatsApp / Email</th>
+            <th scope="col">LedgerDesk CA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Statutory deadline tracking</td>
+            <td class="cmp-partial">Partial</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-manual">Manual sheets</td>
+            <td class="cmp-connected">Connected</td>
+          </tr>
+          <tr>
+            <td>GST/TDS reconciliation</td>
+            <td class="cmp-partial">Partial</td>
+            <td class="cmp-partial">Partial</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-manual">Export &amp; compare</td>
+            <td class="cmp-connected">Connected</td>
+          </tr>
+          <tr>
+            <td>Client document chase</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-outside">Scattered</td>
+            <td class="cmp-connected">Connected</td>
+          </tr>
+          <tr>
+            <td>Notice/reply drafting</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-partial">Research only</td>
+            <td class="cmp-manual">Manual in Word</td>
+            <td class="cmp-connected">Connected</td>
+          </tr>
+          <tr>
+            <td>Reviewer sign-off trail</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-partial">Partial</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-outside">No trail</td>
+            <td class="cmp-connected">Connected</td>
+          </tr>
+          <tr>
+            <td>Evidence retention</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-partial">Partial</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-outside">Folders + email</td>
+            <td class="cmp-connected">Connected</td>
+          </tr>
+          <tr>
+            <td>Exception → review connection</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-none">—</td>
+            <td class="cmp-connected">Connected</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="divider container">
+
+<!-- ===== DAILY USE SCREENS ===== -->
+<section class="section" id="screens" aria-labelledby="screens-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header__label">Daily-use screens</div>
+      <h2 id="screens-heading">What the product actually looks like during a workday.</h2>
+      <p>These screens show the real interface for deadline triage, exception handling, drafting, and sign-off review.</p>
+    </div>
+    <div class="screens-tabs" role="tablist" aria-label="Product screens">
+      <button class="screens-tab screens-tab--active" role="tab" aria-selected="true" aria-controls="screen-1" id="tab-1" type="button">Due dates</button>
+      <button class="screens-tab" role="tab" aria-selected="false" aria-controls="screen-2" id="tab-2" type="button">Client exceptions</button>
+      <button class="screens-tab" role="tab" aria-selected="false" aria-controls="screen-3" id="tab-3" type="button">Missing documents</button>
+      <button class="screens-tab" role="tab" aria-selected="false" aria-controls="screen-4" id="tab-4" type="button">Draft notice reply</button>
+      <button class="screens-tab" role="tab" aria-selected="false" aria-controls="screen-5" id="tab-5" type="button">Review &amp; sign-off</button>
+    </div>
+
+    <!-- Screen 1: Due dates -->
+    <div class="screen-panel screen-panel--active" id="screen-1" role="tabpanel" aria-labelledby="tab-1">
+      <div class="screen-frame">
+        <div class="screen-frame__header">
+          <span class="screen-frame__title">Due dates — Jul 2026 filing cycle</span>
+          <div class="screen-frame__filters">
+            <span class="screen-frame__filter screen-frame__filter--active">All</span>
+            <span class="screen-frame__filter">GST</span>
+            <span class="screen-frame__filter">TDS</span>
+            <span class="screen-frame__filter">Audit</span>
+            <span class="screen-frame__filter">Notices</span>
+          </div>
+        </div>
+        <div class="screen-frame__body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Obligation</th>
+                <th>Period</th>
+                <th>Due date</th>
+                <th>Days left</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <th>Blocker</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-urgent">
+                <td>Mangal Metals Pvt Ltd</td>
+                <td>GSTR-3B</td>
+                <td>Jun 2026</td>
+                <td>20 Jul</td>
+                <td>5 days</td>
+                <td>Priya S</td>
+                <td><span class="chip chip--waiting">Awaiting docs</span></td>
+                <td style="color:var(--warning)">Purchase register missing</td>
+              </tr>
+              <tr class="row-overdue">
+                <td>Orbit Buildcon</td>
+                <td>GST notice reply</td>
+                <td>Ref 27A</td>
+                <td>18 Jul</td>
+                <td style="color:var(--error);font-weight:600">3 days</td>
+                <td>Rohan V</td>
+                <td><span class="chip chip--draft">Draft ready</span></td>
+                <td style="color:var(--error)">Review pending</td>
+              </tr>
+              <tr>
+                <td>Nova Realty LLP</td>
+                <td>TDS return</td>
+                <td>Q1 FY26-27</td>
+                <td>31 Jul</td>
+                <td>16 days</td>
+                <td>Mehul P</td>
+                <td><span class="chip chip--draft">In prep</span></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Veda Plastics</td>
+                <td>Tax audit workpapers</td>
+                <td>FY 25-26</td>
+                <td>22 Jul</td>
+                <td>7 days</td>
+                <td>Aarti K</td>
+                <td><span class="chip chip--review">In review</span></td>
+                <td style="color:var(--warning)">Query unresolved</td>
+              </tr>
+              <tr>
+                <td>Saffron Retail</td>
+                <td>GSTR-1</td>
+                <td>Jun 2026</td>
+                <td>11 Jul</td>
+                <td style="color:var(--error);font-weight:600">Overdue</td>
+                <td>Priya S</td>
+                <td><span class="chip chip--overdue">Overdue</span></td>
+                <td style="color:var(--error)">Bank recon pending</td>
+              </tr>
+              <tr>
+                <td>Aster Healthcare</td>
+                <td>Advance tax</td>
+                <td>Q1 FY26-27</td>
+                <td>15 Jul</td>
+                <td style="color:var(--error);font-weight:600">Overdue</td>
+                <td>Mehul P</td>
+                <td><span class="chip chip--done">Filed</span></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2: Client exceptions -->
+    <div class="screen-panel" id="screen-2" role="tabpanel" aria-labelledby="tab-2">
+      <div class="screen-frame">
+        <div class="screen-frame__header">
+          <span class="screen-frame__title">Client exceptions — Triage view</span>
+          <div class="screen-frame__filters">
+            <span class="screen-frame__filter screen-frame__filter--active">All types</span>
+            <span class="screen-frame__filter">GST mismatch</span>
+            <span class="screen-frame__filter">TDS variance</span>
+            <span class="screen-frame__filter">Bank recon</span>
+          </div>
+        </div>
+        <div class="screen-frame__body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Exception type</th>
+                <th>Entries</th>
+                <th>Value impact</th>
+                <th>Age</th>
+                <th>Assigned to</th>
+                <th>Next action</th>
+                <th>State</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Mangal Metals Pvt Ltd</td>
+                <td>GSTR-2A mismatch</td>
+                <td>14</td>
+                <td>₹2.8L</td>
+                <td>3 days</td>
+                <td>Priya S</td>
+                <td>Ask client for purchase register</td>
+                <td><span class="chip chip--mismatch">Open</span></td>
+              </tr>
+              <tr>
+                <td>Nova Realty LLP</td>
+                <td>TDS variance</td>
+                <td>6</td>
+                <td>₹78K</td>
+                <td>5 days</td>
+                <td>Mehul P</td>
+                <td>Reconcile challan mapping</td>
+                <td><span class="chip chip--draft">In progress</span></td>
+              </tr>
+              <tr>
+                <td>Saffron Retail</td>
+                <td>Bank recon break</td>
+                <td>22</td>
+                <td>₹4.2L</td>
+                <td>1 day</td>
+                <td>Aarti K</td>
+                <td>Review imported statements</td>
+                <td><span class="chip chip--review">Pending review</span></td>
+              </tr>
+              <tr>
+                <td>Veda Plastics</td>
+                <td>Vendor mismatch</td>
+                <td>9</td>
+                <td>₹1.1L</td>
+                <td>8 days</td>
+                <td>Rohan V</td>
+                <td>Escalate before filing</td>
+                <td><span class="chip chip--overdue">Escalated</span></td>
+              </tr>
+              <tr>
+                <td>Aster Healthcare</td>
+                <td>GSTR-2A mismatch</td>
+                <td>3</td>
+                <td>₹42K</td>
+                <td>2 days</td>
+                <td>Priya S</td>
+                <td>Verify with vendor invoices</td>
+                <td><span class="chip chip--mismatch">Open</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 3: Missing documents -->
+    <div class="screen-panel" id="screen-3" role="tabpanel" aria-labelledby="tab-3">
+      <div class="screen-frame">
+        <div class="screen-frame__header">
+          <span class="screen-frame__title">Missing documents — Follow-up tracker</span>
+          <div class="screen-frame__filters">
+            <span class="screen-frame__filter screen-frame__filter--active">All</span>
+            <span class="screen-frame__filter">Awaiting client</span>
+            <span class="screen-frame__filter">Partial</span>
+            <span class="screen-frame__filter">Escalated</span>
+          </div>
+        </div>
+        <div class="screen-frame__body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Requested item</th>
+                <th>Related task</th>
+                <th>Requested on</th>
+                <th>Reminders</th>
+                <th>Last response</th>
+                <th>Impact</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Mangal Metals Pvt Ltd</td>
+                <td>Purchase register</td>
+                <td>GSTR-3B prep</td>
+                <td>11 Jul</td>
+                <td>2 sent</td>
+                <td>"Will send by evening"</td>
+                <td style="color:var(--error)">Filing at risk</td>
+                <td><span class="chip chip--waiting">Awaiting client</span></td>
+              </tr>
+              <tr>
+                <td>Veda Plastics</td>
+                <td>Bank statements (Apr–Jun)</td>
+                <td>Audit workpapers</td>
+                <td>09 Jul</td>
+                <td>3 sent</td>
+                <td>No reply</td>
+                <td style="color:var(--error)">Review blocked</td>
+                <td><span class="chip chip--overdue">Escalate</span></td>
+              </tr>
+              <tr>
+                <td>Orbit Buildcon</td>
+                <td>Notice annexures</td>
+                <td>Notice reply</td>
+                <td>14 Jul</td>
+                <td>1 sent</td>
+                <td>Partial upload (2 of 5)</td>
+                <td style="color:var(--warning)">Draft incomplete</td>
+                <td><span class="chip chip--due">Partial received</span></td>
+              </tr>
+              <tr>
+                <td>Nova Realty LLP</td>
+                <td>Challan payment proof</td>
+                <td>TDS return</td>
+                <td>12 Jul</td>
+                <td>1 sent</td>
+                <td>"Checking with accounts"</td>
+                <td>Filing prep paused</td>
+                <td><span class="chip chip--waiting">Awaiting client</span></td>
+              </tr>
+              <tr>
+                <td>Saffron Retail</td>
+                <td>Credit card statements</td>
+                <td>Bank reconciliation</td>
+                <td>10 Jul</td>
+                <td>2 sent</td>
+                <td>No reply</td>
+                <td style="color:var(--warning)">Recon delayed</td>
+                <td><span class="chip chip--waiting">Awaiting client</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 4: Draft notice reply -->
+    <div class="screen-panel" id="screen-4" role="tabpanel" aria-labelledby="tab-4">
+      <div class="screen-frame">
+        <div class="screen-frame__header">
+          <span class="screen-frame__title">Drafting — Notice reply for Orbit Buildcon</span>
+          <div class="screen-frame__filters">
+            <span class="chip chip--draft" style="font-size:11px">Draft v0.9</span>
+            <span class="chip chip--review" style="font-size:11px">Review requested</span>
+          </div>
+        </div>
+        <div class="draft-editor">
+          <div class="draft-editor__main">
+            <div class="draft-editor__label">Issue summary</div>
+            <div class="draft-editor__field">
+              GST Show Cause Notice (Ref 27A) issued for alleged ITC mismatch in GSTR-3B vs GSTR-2A for the period April–June 2025. Department claims excess ITC of ₹3.2L.
+            </div>
+            <div class="draft-editor__label">Draft reply</div>
+            <div class="draft-editor__text">
+              <p style="margin-bottom:var(--sp-3)">To,<br>The Assistant Commissioner (GST),<br>Ward 14, Mumbai</p>
+              <p style="margin-bottom:var(--sp-3)">Subject: Reply to Show Cause Notice — Ref 27A dated 02.07.2026</p>
+              <p style="margin-bottom:var(--sp-3)">Sir/Madam,</p>
+              <p style="margin-bottom:var(--sp-3)">With reference to the above-mentioned notice, we respectfully submit that the alleged ITC mismatch of ₹3.2L pertains to invoices that were reflected in GSTR-2A of the subsequent quarter (Jul–Sep 2025). The relevant supplier confirmations, purchase invoices, and GSTR-2A extracts for both periods are attached as Annexure A through C.</p>
+              <p style="margin-bottom:var(--sp-3)">We further submit that the ITC was claimed in accordance with Section 16 of the CGST Act, 2017, and the conditions prescribed therein stand fulfilled...</p>
+              <p style="color:var(--text-muted);font-style:italic">[Draft continues — 2 additional paragraphs with supporting references]</p>
+            </div>
+          </div>
+          <div class="draft-editor__sidebar">
+            <div class="draft-editor__label">Linked sources</div>
+            <div style="font-size:var(--fs-xs);color:var(--text-secondary);margin-bottom:var(--sp-4);">
+              <div style="padding:4px 0;border-bottom:1px solid var(--border-subtle)">📄 GSTR-2A extract (Apr–Jun 2025)</div>
+              <div style="padding:4px 0;border-bottom:1px solid var(--border-subtle)">📄 GSTR-2A extract (Jul–Sep 2025)</div>
+              <div style="padding:4px 0;border-bottom:1px solid var(--border-subtle)">📄 Purchase invoices — 6 files</div>
+              <div style="padding:4px 0;border-bottom:1px solid var(--border-subtle)">📄 Supplier confirmations — 3 files</div>
+              <div style="padding:4px 0;border-bottom:1px solid var(--border-subtle)">📄 Show cause notice (Ref 27A)</div>
+              <div style="padding:4px 0;">📄 Section 16, CGST Act 2017</div>
+            </div>
+            <div class="draft-editor__label">Reviewer</div>
+            <div style="font-size:var(--fs-sm);color:var(--text);margin-bottom:var(--sp-4);">N. Deshpande (Partner)</div>
+            <div class="draft-editor__label">Review comments</div>
+            <div style="font-size:var(--fs-xs);color:var(--text-secondary);background:var(--bg);padding:var(--sp-2) var(--sp-3);border-radius:var(--r-sm);border:1px solid var(--border-subtle);">
+              <strong style="color:var(--text)">N. Deshpande</strong> · 2h ago<br>
+              "Add the reconciliation summary as a separate annexure. Also cite the Bharti Airtel Ltd CESTAT ruling on delayed 2A reflection."
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 5: Review & Sign-off -->
+    <div class="screen-panel" id="screen-5" role="tabpanel" aria-labelledby="tab-5">
+      <div class="screen-frame">
+        <div class="screen-frame__header">
+          <span class="screen-frame__title">Review &amp; sign-off history</span>
+          <div class="screen-frame__filters">
+            <span class="screen-frame__filter screen-frame__filter--active">Today</span>
+            <span class="screen-frame__filter">This week</span>
+            <span class="screen-frame__filter">Exported</span>
+          </div>
+        </div>
+        <div class="screen-frame__body">
+          <div class="timeline">
+            <div class="timeline-item timeline-item--approved">
+              <span class="timeline-item__time">15 Jul, 4:42 PM</span>
+              <span class="timeline-item__dot"></span>
+              <div class="timeline-item__content">
+                <strong>N. Deshpande</strong> approved <strong>GSTR-3B review pack</strong> for Mangal Metals Pvt Ltd · v1.3
+                <br><span class="chip chip--done" style="margin-top:4px">Exported</span>
+              </div>
+            </div>
+            <div class="timeline-item timeline-item--returned">
+              <span class="timeline-item__time">15 Jul, 2:18 PM</span>
+              <span class="timeline-item__dot"></span>
+              <div class="timeline-item__content">
+                <strong>N. Deshpande</strong> returned <strong>Notice reply draft</strong> for Orbit Buildcon · v0.9
+                <br><span style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:2px;display:inline-block">"Add reconciliation annexure and CESTAT citation"</span>
+              </div>
+            </div>
+            <div class="timeline-item timeline-item--approved">
+              <span class="timeline-item__time">14 Jul, 7:11 PM</span>
+              <span class="timeline-item__dot"></span>
+              <div class="timeline-item__content">
+                <strong>K. Shah</strong> approved <strong>Audit workpaper pack</strong> for Veda Plastics · v2.1
+                <br><span class="chip chip--done" style="margin-top:4px">Exported</span>
+              </div>
+            </div>
+            <div class="timeline-item timeline-item--exported">
+              <span class="timeline-item__time">14 Jul, 5:30 PM</span>
+              <span class="timeline-item__dot"></span>
+              <div class="timeline-item__content">
+                <strong>Priya S</strong> submitted <strong>GSTR-1 reconciliation summary</strong> for Saffron Retail for review · v1.0
+              </div>
+            </div>
+            <div class="timeline-item timeline-item--approved">
+              <span class="timeline-item__time">14 Jul, 3:05 PM</span>
+              <span class="timeline-item__dot"></span>
+              <div class="timeline-item__content">
+                <strong>N. Deshpande</strong> approved <strong>TDS reconciliation note</strong> for Nova Realty LLP · v1.1
+                <br><span class="chip chip--done" style="margin-top:4px">Exported</span>
+              </div>
+            </div>
+            <div class="timeline-item timeline-item--returned">
+              <span class="timeline-item__time">14 Jul, 11:20 AM</span>
+              <span class="timeline-item__dot"></span>
+              <div class="timeline-item__content">
+                <strong>K. Shah</strong> returned <strong>Audit observation memo</strong> for Veda Plastics · v1.8
+                <br><span style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:2px;display:inline-block">"Cross-reference missing for Schedule III items in Section 4"</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider container">
+
+<!-- ===== TRUST ===== -->
+<section class="section section--muted" id="trust" aria-labelledby="trust-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header__label">Firm governance</div>
+      <h2 id="trust-heading">Built for firms that handle sensitive client records.</h2>
+      <p>Access, isolation, review logs, and evidence retention are not add-ons — they are the default operating layer.</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card">
+        <h3>Role-based access control</h3>
+        <p>Partners, managers, executives, and clients each see only what their role permits. Assign access at the client, module, or engagement level.</p>
+      </div>
+      <div class="trust-card">
+        <h3>Client-wise data isolation</h3>
+        <p>Every client's documents, exceptions, drafts, and review history are logically separated. Team members access only assigned clients.</p>
+      </div>
+      <div class="trust-card">
+        <h3>Review and sign-off logs</h3>
+        <p>Every reviewer action — approval, return, comment, escalation — is timestamped and attributed. Sign-off trails survive staff turnover.</p>
+      </div>
+      <div class="trust-card">
+        <h3>Document version history</h3>
+        <p>Every upload, edit, and replacement is versioned. Previous versions remain accessible. No file is silently overwritten.</p>
+      </div>
+      <div class="trust-card">
+        <h3>Exportable working paper packs</h3>
+        <p>Export client-wise or engagement-wise evidence packs with all linked documents, review comments, and sign-off records in one structured archive.</p>
+      </div>
+      <div class="trust-card">
+        <h3>Activity and change audit trail</h3>
+        <p>Every action across the workspace — assignment changes, document access, status updates — is logged. The trail is immutable and exportable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider container">
+
+<!-- ===== PRICING PHILOSOPHY ===== -->
+<section class="section" id="pricing" aria-labelledby="pricing-heading">
+  <div class="container">
+    <div class="pricing-block">
+      <div>
+        <h3 id="pricing-heading">Priced for firms, not freelancers.</h3>
+        <p>LedgerDesk is priced around firm realities: client volume, team seats, and the modules you actually use. There is no artificially tiered feature gating designed to force upgrades mid-cycle.</p>
+        <p>We work with firms on procurement: annual contracts, multi-branch setups, partner-level billing visibility, and volume adjustments at renewal — not monthly credit-card traps.</p>
+        <a href="#cta" class="btn btn--primary btn--lg" style="margin-top:var(--sp-4)">Discuss pricing for your firm</a>
+      </div>
+      <div>
+        <div class="draft-editor__label" style="margin-bottom:var(--sp-4)">What pricing depends on</div>
+        <ul class="pricing-notes">
+          <li>Number of active clients managed in the workspace</li>
+          <li>Team seats: partners, managers, executives, article clerks</li>
+          <li>Modules activated: reconciliation, drafting, document portal, agents</li>
+          <li>Review and evidence retention volume</li>
+          <li>Multi-branch or multi-firm configurations</li>
+          <li>Contract term: annual billing preferred</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="final-cta" id="cta" aria-labelledby="cta-heading">
+  <div class="container">
+    <h2 id="cta-heading">Reduce clerical load.<br>Keep professional control.</h2>
+    <p>See how LedgerDesk structures your firm's actual workflow — from statutory deadline to signed-off evidence pack.</p>
+    <div class="final-cta__actions">
+      <a href="#" class="btn btn--primary btn--lg">Book a workflow demo</a>
+      <a href="#screens" class="btn btn--secondary btn--lg">Explore the product screens</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="site-footer__inner">
+      <span>© 2026 LedgerDesk CA. Practice operating system for Chartered Accountants.</span>
+      <div class="site-footer__links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Security</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</main>
+
+<script>
+/* ===== Theme Toggle ===== */
+(function() {
+  const toggle = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+  const sunIcon = toggle.querySelector('.theme-icon-sun');
+  const moonIcon = toggle.querySelector('.theme-icon-moon');
+
+  function setTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('ldca-theme', theme);
+    if (theme === 'dark') {
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    } else {
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    }
+  }
+
+  // Init from stored preference or system preference
+  const stored = localStorage.getItem('ldca-theme');
+  if (stored) {
+    setTheme(stored);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme('dark');
+  }
+
+  toggle.addEventListener('click', function() {
+    const current = html.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  // Listen for system changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+    if (!localStorage.getItem('ldca-theme')) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+})();
+
+/* ===== Screen Tabs ===== */
+(function() {
+  const tabs = document.querySelectorAll('.screens-tab');
+  const panels = document.querySelectorAll('.screen-panel');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) {
+        t.classList.remove('screens-tab--active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      panels.forEach(function(p) {
+        p.classList.remove('screen-panel--active');
+      });
+      tab.classList.add('screens-tab--active');
+      tab.setAttribute('aria-selected', 'true');
+      var targetId = tab.getAttribute('aria-controls');
+      document.getElementById(targetId).classList.add('screen-panel--active');
+    });
+
+    // Keyboard support
+    tab.addEventListener('keydown', function(e) {
+      var idx = Array.from(tabs).indexOf(tab);
+      var newIdx = idx;
+      if (e.key === 'ArrowRight') { newIdx = (idx + 1) % tabs.length; }
+      else if (e.key === 'ArrowLeft') { newIdx = (idx - 1 + tabs.length) % tabs.length; }
+      else { return; }
+      e.preventDefault();
+      tabs[newIdx].click();
+      tabs[newIdx].focus();
+    });
+  });
+})();
+
+/* ===== Smooth scroll for nav links ===== */
+(function() {
+  document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
