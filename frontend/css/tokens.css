@@ -1,0 +1,140 @@
+/* ===== LEDGERDESK CA — DESIGN TOKENS ===== */
+/* Shared across all frontend pages: landing, auth, dashboard */
+
+:root {
+  /* Spacing — 4px system */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px; --sp-20: 80px; --sp-24: 96px;
+
+  /* Radii */
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-xl: 14px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,.10);
+  --shadow-panel: 0 1px 3px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+
+  /* Typography */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --fs-xs: clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);
+  --fs-sm: clamp(0.75rem, 0.7rem + 0.2vw, 0.8125rem);
+  --fs-base: clamp(0.8125rem, 0.78rem + 0.2vw, 0.9375rem);
+  --fs-md: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);
+  --fs-lg: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --fs-xl: clamp(1.375rem, 1.1rem + 1vw, 1.875rem);
+  --fs-2xl: clamp(1.75rem, 1.4rem + 1.5vw, 2.625rem);
+
+  --lh-tight: 1.2; --lh-snug: 1.35; --lh-normal: 1.55;
+
+  /* Transition */
+  --ease: cubic-bezier(.4,0,.2,1);
+  --dur: 200ms;
+
+  /* Max widths */
+  --max-w: 1280px;
+  --max-w-narrow: 880px;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg: #f7f7f5;
+  --bg-alt: #eeeee9;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --border: #e0deda;
+  --border-subtle: #ece9e4;
+  --text: #1a1a18;
+  --text-secondary: #5c5b57;
+  --text-muted: #8a8880;
+  --teal: #0d8a72;
+  --teal-light: #e6f5f1;
+  --teal-hover: #0a7562;
+  --warning: #c4760a;
+  --warning-bg: #fef6e8;
+  --error: #c13a3a;
+  --error-bg: #fdeaea;
+  --success: #1a7a4e;
+  --success-bg: #e8f5ee;
+  --chip-bg: #f0efeb;
+  --chip-border: #dddbd5;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #f0efeb;
+  --panel-header-bg: #fafaf8;
+  --table-header: #f7f6f3;
+  --table-row-hover: #fafaf8;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --bg: #111110;
+  --bg-alt: #1a1a18;
+  --surface: #1e1e1c;
+  --surface-elevated: #252523;
+  --border: #2e2e2b;
+  --border-subtle: #262624;
+  --text: #e8e6e1;
+  --text-secondary: #a5a39d;
+  --text-muted: #7a7872;
+  --teal: #2cc4a2;
+  --teal-light: #12302a;
+  --teal-hover: #34d6b2;
+  --warning: #e5a33a;
+  --warning-bg: #2a2210;
+  --error: #e06060;
+  --error-bg: #2a1414;
+  --success: #3cc47a;
+  --success-bg: #122a1c;
+  --chip-bg: #262624;
+  --chip-border: #363632;
+  --sidebar-bg: #161614;
+  --sidebar-active: #252523;
+  --panel-header-bg: #1e1e1c;
+  --table-header: #222220;
+  --table-row-hover: #252523;
+}
+
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  color: var(--text);
+  background: var(--bg);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+a { color: var(--teal); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* Shared button styles */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-sm); font-weight: 600; padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-md); transition: all var(--dur) var(--ease);
+  white-space: nowrap; line-height: 1.4;
+}
+.btn--primary { background: var(--teal); color: #fff; }
+.btn--primary:hover { background: var(--teal-hover); text-decoration: none; }
+.btn--secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn--secondary:hover { border-color: var(--text-muted); text-decoration: none; }
+.btn--lg { padding: var(--sp-3) var(--sp-6); font-size: var(--fs-base); }
+
+/* Chips */
+.chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 100px; font-size: 10px; font-weight: 600;
+  white-space: nowrap;
+}
+.chip--due { background: var(--warning-bg); color: var(--warning); }
+.chip--overdue { background: var(--error-bg); color: var(--error); }
+.chip--review { background: var(--teal-light); color: var(--teal); }
+.chip--done { background: var(--success-bg); color: var(--success); }
+.chip--draft { background: var(--chip-bg); color: var(--text-secondary); border: 1px solid var(--chip-border); }
+.chip--mismatch { background: var(--error-bg); color: var(--error); }
+.chip--open { background: var(--error-bg); color: var(--error); }
+.chip--progress { background: var(--warning-bg); color: var(--warning); }
+.chip--waiting { background: var(--teal-light); color: var(--teal); }
