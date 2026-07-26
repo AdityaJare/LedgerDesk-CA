@@ -9,11 +9,29 @@ from app.config import settings
 from app.auth.service import hash_password
 
 async def seed():
-    mongo_kwargs = {}
-    if "mongodb+srv://" in settings.MONGODB_URL:
-        mongo_kwargs["tlsAllowInvalidCertificates"] = True
-    client = AsyncIOMotorClient(settings.MONGODB_URL, **mongo_kwargs)
-    db = client[settings.DB_NAME]
+    urls_to_try = [settings.MONGODB_URL, "mongodb://localhost:27017"]
+    client = None
+    db = None
+
+    for url in urls_to_try:
+        try:
+            mongo_kwargs = {"serverSelectionTimeoutMS": 5000}
+            if "mongodb+srv://" in url:
+                mongo_kwargs["tls"] = True
+                mongo_kwargs["tlsAllowInvalidCertificates"] = True
+            c = AsyncIOMotorClient(url, **mongo_kwargs)
+            await c.admin.command('ping')
+            client = c
+            db = client[settings.DB_NAME]
+            print(f"Connected to MongoDB for seeding at {url[:25]}...")
+            break
+        except Exception as e:
+            print(f"Connection to {url[:25]} failed: {e}. Trying next...")
+
+    if db is None:
+        client = AsyncIOMotorClient("mongodb://localhost:27017")
+        db = client[settings.DB_NAME]
+
 
 
     # --- Drop existing data for clean re-seed ---
