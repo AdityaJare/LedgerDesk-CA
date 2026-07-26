@@ -59,29 +59,28 @@ async def dashboard_summary(
     db = Depends(get_database),
     current_user = Depends(get_current_user)
 ):
+    import asyncio
     from datetime import datetime, date
     today = datetime.combine(date.today(), datetime.min.time())
 
-    overdue_count = await db.deadlines.count_documents({
-        "due_date": {"$lt": today},
-        "status": {"$nin": ["filed"]}
-    })
-    pending_deadlines = await db.deadlines.count_documents({
-        "status": {"$in": ["pending", "in_prep", "awaiting_docs"]}
-    })
-    open_exceptions = await db.exceptions.count_documents({
-        "state": {"$in": ["Open", "In progress"]}
-    })
-    awaiting_docs = await db.documents.count_documents({
-        "status": "Awaiting client"
-    })
-    drafts_in_progress = await db.drafts.count_documents({
-        "state": {"$in": ["Requested", "In progress", "Draft ready"]}
-    })
-    pending_reviews = await db.reviews.count_documents({
-        "status": {"$in": ["Awaiting manager", "Awaiting partner"]}
-    })
-    total_clients = await db.clients.count_documents({"status": "active"})
+    # Execute all 7 Mongo count queries concurrently
+    (
+        overdue_count,
+        pending_deadlines,
+        open_exceptions,
+        awaiting_docs,
+        drafts_in_progress,
+        pending_reviews,
+        total_clients
+    ) = await asyncio.gather(
+        db.deadlines.count_documents({"due_date": {"$lt": today}, "status": {"$nin": ["filed"]}}),
+        db.deadlines.count_documents({"status": {"$in": ["pending", "in_prep", "awaiting_docs"]}}),
+        db.exceptions.count_documents({"state": {"$in": ["Open", "In progress"]}}),
+        db.documents.count_documents({"status": "Awaiting client"}),
+        db.drafts.count_documents({"state": {"$in": ["Requested", "In progress", "Draft ready"]}}),
+        db.reviews.count_documents({"status": {"$in": ["Awaiting manager", "Awaiting partner"]}}),
+        db.clients.count_documents({"status": "active"})
+    )
 
     return {
         "overdue_deadlines": overdue_count,
@@ -92,6 +91,7 @@ async def dashboard_summary(
         "pending_reviews": pending_reviews,
         "total_clients": total_clients
     }
+
 
 # --- Serve frontend static files ---
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "frontend")

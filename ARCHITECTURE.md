@@ -294,3 +294,4 @@ To handle highly sensitive client accounts, LedgerDesk CA implements the followi
    - Every AI endpoint returns a `draft_only: true` property in the metadata.
    - The UI displays explicit banners showing that drafts require reviewer sign-off.
    - LLM generation prompts enforce grounded outputs with inline legal source links (e.g. referencing specific sections of the CGST Act 2017).
+``  

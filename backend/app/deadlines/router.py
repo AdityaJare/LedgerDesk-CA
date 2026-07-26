@@ -134,3 +134,41 @@ async def update_deadline(
     )
     
     return serialized
+
+@router.post("/check-escalations")
+async def check_deadline_escalations(
+    db = Depends(get_database),
+    current_user = Depends(get_current_user)
+):
+    today = datetime.combine(date.today(), datetime.min.time())
+    
+    # Overdue criteria: due_date < today and status != filed
+    overdue_cursor = db.deadlines.find({
+        "due_date": {"$lt": today},
+        "status": {"$nin": ["filed", "overdue"]}
+    })
+    
+    escalated_ids = []
+    async for doc in overdue_cursor:
+        doc_id = doc["_id"]
+        await db.deadlines.update_one(
+            {"_id": doc_id},
+            {"$set": {"status": "overdue", "blocker": doc.get("blocker") or "Statutory due date elapsed without filing confirmation"}}
+        )
+        escalated_ids.append(str(doc_id))
+        
+        await log_audit_event(
+            db,
+            user_id="system_escalation_engine",
+            action="auto_escalate_deadline",
+            resource_type="deadline",
+            resource_id=str(doc_id),
+            details=f"Auto-escalated status to OVERDUE for {doc.get('client_name')} - {doc.get('obligation')}"
+        )
+        
+    return {
+        "status": "success",
+        "escalated_count": len(escalated_ids),
+        "escalated_deadline_ids": escalated_ids
+    }
+

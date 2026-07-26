@@ -151,3 +151,43 @@ async def send_reminder(
     )
     
     return serialized
+
+@router.get("/{doc_id}/share-link")
+async def generate_document_share_link(
+    doc_id: str,
+    db = Depends(get_database),
+    current_user = Depends(get_current_user)
+):
+    try:
+        oid = ObjectId(doc_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid document ID")
+        
+    doc = await db.documents.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document request not found")
+        
+    upload_url = f"http://localhost:8000/api/documents/{doc_id}/upload"
+    client_name = doc.get("client_name", "Valued Client")
+    requested_item = doc.get("requested_item", "Statutory Document")
+    related_task = doc.get("related_task", "Filing Compliance")
+    firm_name = current_user.get("firm_name", "CA Office")
+
+    whatsapp_text = (
+        f"Dear {client_name},\n\n"
+        f"Greetings from {firm_name}.\n\n"
+        f"This is a gentle reminder regarding the outstanding document: *{requested_item}* required for *{related_task}*.\n\n"
+        f"Kindly upload the file securely via this direct upload link:\n{upload_url}\n\n"
+        f"Timely receipt of documents ensures your statutory compliance is filed before the due date to avoid late fees.\n\n"
+        f"Thank you,\n{firm_name}"
+    )
+
+    return {
+        "document_id": doc_id,
+        "client_name": client_name,
+        "upload_url": upload_url,
+        "whatsapp_template": whatsapp_text,
+        "email_subject": f"Document Reminder: {requested_item} for {related_task} - {firm_name}",
+        "email_body": whatsapp_text.replace("*", "")
+    }
+

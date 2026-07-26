@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, status
 from app.database import get_database
 from app.auth.dependencies import get_current_user
 from app.exceptions_module.schemas import ExceptionCreate, ExceptionUpdate, ExceptionResponse
@@ -101,3 +101,61 @@ async def update_exception(
     )
     
     return serialized
+
+@router.post("/import-csv", status_code=status.HTTP_201_CREATED)
+async def import_reconciliation_csv(
+    client_id: str,
+    client_name: str,
+    file: UploadFile = File(...),
+    db = Depends(get_database),
+    current_user = Depends(get_current_user)
+):
+    import csv
+    import io
+    
+    contents = await file.read()
+    try:
+        decoded = contents.decode("utf-8")
+    except UnicodeDecodeError:
+        decoded = contents.decode("latin-1")
+        
+    reader = csv.DictReader(io.StringIO(decoded))
+    created_items = []
+    
+    for row in reader:
+        # Standard GSTR-2B vs Books reconciliation fields
+        exc_type = row.get("type") or row.get("Exception Type") or "GSTR-2A vs Books mismatch"
+        affected = int(row.get("affected_entries") or row.get("Affected Entries") or 1)
+        value_impact = row.get("value_impact") or row.get("Value Impact") or "₹0"
+        next_act = row.get("next_action") or row.get("Next Action") or "Verify purchase register with client invoices"
+        
+        new_doc = {
+            "client_id": client_id,
+            "client_name": client_name,
+            "type": exc_type,
+            "affected_entries": affected,
+            "value_impact": value_impact,
+            "age": "1 day",
+            "assigned_to": current_user["name"],
+            "next_action": next_act,
+            "state": "Open"
+        }
+        res = await db.exceptions.insert_one(new_doc)
+        new_doc["_id"] = res.inserted_id
+        created_items.append(serialize_exception(new_doc))
+        
+    await log_audit_event(
+        db,
+        user_id=current_user["id"],
+        action="bulk_import_exceptions",
+        resource_type="exception",
+        resource_id=client_id,
+        details=f"Bulk imported {len(created_items)} reconciliation exceptions for {client_name} from {file.filename}"
+    )
+    
+    return {
+        "status": "success",
+        "imported_count": len(created_items),
+        "exceptions": created_items
+    }
+

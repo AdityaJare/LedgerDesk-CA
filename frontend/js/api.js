@@ -1,5 +1,7 @@
 /* ===== API Client for LedgerDesk CA ===== */
-const API_BASE = window.location.origin;
+const API_BASE = (window.location.protocol === 'file:' || !window.location.port || window.location.origin === 'null') 
+  ? "http://localhost:8000" 
+  : window.location.origin;
 
 const api = {
   getToken() {

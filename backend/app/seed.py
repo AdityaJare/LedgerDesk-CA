@@ -9,8 +9,12 @@ from app.config import settings
 from app.auth.service import hash_password
 
 async def seed():
-    client = AsyncIOMotorClient(settings.MONGODB_URL)
+    mongo_kwargs = {}
+    if "mongodb+srv://" in settings.MONGODB_URL:
+        mongo_kwargs["tlsAllowInvalidCertificates"] = True
+    client = AsyncIOMotorClient(settings.MONGODB_URL, **mongo_kwargs)
     db = client[settings.DB_NAME]
+
 
     # --- Drop existing data for clean re-seed ---
     for col in ["users", "clients", "deadlines", "exceptions", "documents", "drafts", "reviews", "audit_logs", "demo_bookings"]:
